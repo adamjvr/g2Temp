@@ -55,7 +55,7 @@ Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
 //
 #define THERMOUCOUPLE_0_OFFSET 		-0.10506	// derived from MAX31588 Type K Cold Ref Thermocuple ADC
 #define THERMOUCOUPLE_1_OFFSET 		-0.10506	// derived from MAX31588 Type K Cold Ref Thermocuple ADC
-// 10.506 uV/C is the MAX31588K offset
+                                            // 10.506 uV/C is the MAX31588K offset
 #define SURFACE_OF_THE_SUN 	5505			// termperature at the surface of the sun in Celcius
 #define HOTTER_THAN_THE_SUN 10000			// a temperature that is hotter than the surface of the sun
 #define ABSOLUTE_ZERO 		-273.15			// Celcius
@@ -153,7 +153,5 @@ void thermocouple_0_callback(void);
 void thermocouple_1_callback(void);
 void thermistor_0_callback(void);
 void thermistor_1_callback(void);
-
-
 
 #endif

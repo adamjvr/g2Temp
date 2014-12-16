@@ -19,35 +19,155 @@ Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
  OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
+
+// Includes
+#include "temperature.h"
 #include "heaterpid.h"
 #include "sensors.h"
 
-
-// Heater MOSFET Configuration
-// 0 = OFF! / 1 = ON!
-#define HEATER_0_ENABLE 0
-#define HEATER_1_ENABLE 0
-#define HEATER_AUX_ENABLE 0
-#define HEATBED_ENABLE 0
-
+bool heater_0_run false;
+bool heater_1_run false;
+bool heater_aux_run false;
+bool heatbed_run false;
 
 // Runs PID Controller for Heater-0 on Tigershark 3D PROTOTYPE 1
 void controller_heater_0(){
-  heater_0_init();
-  thermocouple_0_init();
+  heater_0_init();              // Initialized Heater 0 Device (Nozzle 0)
+  thermocouple_0_init();        // Initialize Thermocouple Sensor 0
+  sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heater-0 Activated")[j]);  // print Heater Status
+  while(heater_0_run==true){
+    tick_callback_heater_0();
+  }
 }
 // Runs PID Controller for Heater-1 on Tigershark 3D PROTOTYPE 1
 void controller_heater_1(){
-  heater_1_init();
-  thermocouple_1_init();
+  heater_1_init();              // Initialized Heater 1 Device (Nozzle 1)
+  thermocouple_1_init();        // Initialize Thermocouple Sensor 0
+  sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heater-0 Activated")[j]); // print Heater Status
+  while(heater_1_run==true){
+    tick_callback_heater_1();
+  }
 }
 // Runs PID Controller for Heater-Aux on Tigershark 3D PROTOTYPE 1
 void controller_heater_aux(){
-  heater_aux_init();
-  thermistor_0_init();
+  heater_aux_init();            // Initialized Aux Heater Device (build chamber heater)
+  thermistor_0_init();          // Initialize Thermistor Sensor 0 ATSAM ADC
+  sprintf((char *)nv.token, "g%2d%c", 53+i, ("Aux Heater Activated")[j]); // print Heater Status
+  while(heater_aux_run==true){
+    tick_callback_heater_aux();
+  }
 }
 // Runs PID Controller for Heatbed on Tigershark 3D PROTOTYPE 1
 void controller_heatbed(){
-  heatbed_init();
-  thermistor_0_init();
+  heatbed_init();               // Initialized Heatbed Device
+  thermistor_0_init();          // Initialize Thermistor Sensor 1 ATSAM ADC
+  sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heatbed Activated")[j]); // print Heater Status
+  while(heatbed_run==true){
+    tick_callback_heatbed();
+  }
+}
+
+//MOTATE ISR ?????????????????????
+
+//MOTATE timer which one is free for this ?
+void temp_control_timer_init(void){
+
+}
+
+void tick_1ms(void){  // 1ms callout
+  sensor_callback();
+}
+
+void tick_100ms(void){  // 100ms callout
+	heater_callback();
+}
+
+uint8_t tick_callback_heater_0(void)
+{
+  if (device.tick_flag == false) { return (NO_OP);}
+
+  device.tick_flag = false;
+  tick_1ms();
+
+  if (--device.tick_10ms_count != 0) { return (OP_CP);}
+  device.tick_10ms_count = 10;
+  tick_10ms();
+
+  if (--device.tick_100ms_count != 0) { return (OP_CP);}
+  device.tick_100ms_count = 10;
+  tick_100ms();
+
+  if (--device.tick_1sec_count != 0) { return (OP_CP);}
+  device.tick_1sec_count = 10;
+  tick_1sec();
+
+  return (OP_CP);
+}
+
+uint8_t tick_callback_heater_1(void)
+{
+  if (device.tick_flag == false) { return (NO_OP);}
+
+  device.tick_flag = false;
+  tick_1ms();
+
+  if (--device.tick_10ms_count != 0) { return (OP_CP);}
+  device.tick_10ms_count = 10;
+  tick_10ms();
+
+  if (--device.tick_100ms_count != 0) { return (OP_CP);}
+  device.tick_100ms_count = 10;
+  tick_100ms();
+
+  if (--device.tick_1sec_count != 0) { return (OP_CP);}
+  device.tick_1sec_count = 10;
+  tick_1sec();
+
+  return (OP_CP);
+}
+
+
+uint8_t tick_callback_heater_aux(void)
+{
+  if (device.tick_flag == false) { return (NO_OP);}
+
+  device.tick_flag = false;
+  tick_1ms();
+
+  if (--device.tick_10ms_count != 0) { return (OP_CP);}
+  device.tick_10ms_count = 10;
+  tick_10ms();
+
+  if (--device.tick_100ms_count != 0) { return (OP_CP);}
+  device.tick_100ms_count = 10;
+  tick_100ms();
+
+  if (--device.tick_1sec_count != 0) { return (OP_CP);}
+  device.tick_1sec_count = 10;
+  tick_1sec();
+
+  return (OP_CP);
+}
+
+
+uint8_t tick_callback_heatbed(void)
+{
+  if (device.tick_flag == false) { return (NO_OP);}
+
+  device.tick_flag = false;
+  tick_1ms();
+
+  if (--device.tick_10ms_count != 0) { return (OP_CP);}
+  device.tick_10ms_count = 10;
+  tick_10ms();
+
+  if (--device.tick_100ms_count != 0) { return (OP_CP);}
+  device.tick_100ms_count = 10;
+  tick_100ms();
+
+  if (--device.tick_1sec_count != 0) { return (OP_CP);}
+  device.tick_1sec_count = 10;
+  tick_1sec();
+
+  return (OP_CP);
 }

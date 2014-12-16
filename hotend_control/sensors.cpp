@@ -35,7 +35,8 @@ Motate::SPI<kSPI0_MISOPinNumber> _SPI_0_MISO;
 Motate::SPI<kSPI0_MOSIPinNumber> _SPI_0_MOSI;
 Motate::SPI<kThermocouple_CS_0> _TC_CS_0;
 Motate::SPI<kThermocouple_CS_1> _TC_CS_1;
-
+InputPin<kThermistor_0> _TR_0_AN;
+InputPin<kThermistor_1> _TR_1_AN;
 
 // Thermocouple 0 (MAX31588 Type K) Sensor Sample
 static inline double _thermocouple_0_sample(uint8_t adc_channel);
@@ -315,7 +316,7 @@ uint16_t thermocouple_1_adc_read(){
 
 uint16_t thermistor_0_adc_read(){
   uint16_t tr0_val=0;
-
+  tr0_val=_TR_0_AN.getInputValue();
   //ADC Code
   return tr0_val;
 
@@ -323,7 +324,7 @@ uint16_t thermistor_0_adc_read(){
 
 uint16_t thermistor_1_adc_read(){
   uint16_t tr1_val=0;
-
+  tr1_val=_TR_1_AN.getInputValue();
   //ADC Code
   return tr1_val;
 }
