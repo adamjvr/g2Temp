@@ -29,6 +29,14 @@ Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
 #include "sensors.h"
 #include "thermistor_tables.h"
 
+// Motate Pins
+Motate::SPI<kSPI0_SCKPinNumber> _SPI_0_SCK;
+Motate::SPI<kSPI0_MISOPinNumber> _SPI_0_MISO;
+Motate::SPI<kSPI0_MOSIPinNumber> _SPI_0_MOSI;
+Motate::SPI<kThermocouple_CS_0> _TC_CS_0;
+Motate::SPI<kThermocouple_CS_1> _TC_CS_1;
+
+
 // Thermocouple 0 (MAX31588 Type K) Sensor Sample
 static inline double _thermocouple_0_sample(uint8_t adc_channel);
 // Thermocouple 1 (MAX31588 Type K) Sensor Sample
@@ -167,7 +175,7 @@ void thermocouple_0_callback(void){
 	}
 
 	// get a sample and return if still in the reading period
-	thermocouple_0.sample[thermocouple_0.sample_idx] = _sensor_sample(ADC_CHANNEL);
+	thermocouple_0.sample[thermocouple_0.sample_idx] = _thermocouple_0_sample(ADC_CHANNEL);
 	if ((++thermocouple_0.sample_idx) < SENSOR_SAMPLES) { return; }
 
 	// process the array to clean up samples
@@ -209,7 +217,7 @@ void thermocouple_1_callback(void){
   }
 
   // get a sample and return if still in the reading period
-  thermocouple_1.sample[thermocouple_1.sample_idx] = _thermocouple_0_sample(ADC_CHANNEL);
+  thermocouple_1.sample[thermocouple_1.sample_idx] = _thermocouple_1_sample(ADC_CHANNEL);
   if ((++thermocouple_1.sample_idx) < SENSOR_SAMPLES) { return; }
 
   // process the array to clean up samples
@@ -280,24 +288,42 @@ static inline double _thermocouple_1_sample(uint8_t adc_channel)
 }
 
 
+/*
+Motate::SPI<kSPI0_SCKPinNumber> _SPI_0_SCK;
+Motate::SPI<kSPI0_MISOPinNumber> _SPI_0_MISO;
+Motate::SPI<kSPI0_MOSIPinNumber> _SPI_0_MOSI;
+Motate::SPI<kThermocouple_CS_0> _TC_CS_0;
+Motate::SPI<kThermocouple_CS_1> _TC_CS_1;
+*/
+
 uint16_t thermocouple_0_adc_read(){
-  uint16_t tc0_val;
+  uint16_t tc0_val=0;
+  _TC_CS_0.write(fales); // Logic Low enable MAX31588 SPI ADC
+  // Rob SPI Help ?
+  _TC_CS_0.write(true); // Logic High disable MAX31588 SPI ADC
   return tc0_val;
 }
 
 
 uint16_t thermocouple_1_adc_read(){
-  uint16_t tc1_val;
+  uint16_t tc1_val=0;
+  _TC_CS_1.write(fales); // Logic Low enable MAX31588 SPI ADC
+  // Rob SPI Help ?
+  _TC_CS_1.write(true); // Logic High disable MAX31588 SPI ADC
   return tc1_val;
 }
 
 uint16_t thermistor_0_adc_read(){
-  uint16_t tr0_val;
+  uint16_t tr0_val=0;
+
+  //ADC Code
   return tr0_val;
 
 }
 
 uint16_t thermistor_1_adc_read(){
-  uint16_t tr1_val;
+  uint16_t tr1_val=0;
+
+  //ADC Code
   return tr1_val;
 }

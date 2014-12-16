@@ -148,14 +148,14 @@ struct pid_struct {
 
 
 // allocations
-heater_t heater_0;      // allocate one heater...
-heater_t heater_1;     // Allocate second heater
-heater_t heater_aux;         // Allocate aux heater
-heater_t heatbed;
-pid_struct pid_heater_0;						// allocate one PID channel...
-pid_strudt pid_heater_1;
-pid_struct pid_heater_aux;
-pid_struct pid_heatbed;
+static heater_t heater_0;      // allocate one heater...
+static heater_t heater_1;     // Allocate second heater
+static heater_t heater_aux;         // Allocate aux heater
+static heater_t heatbed;
+static pid_struct pid_heater_0;						// allocate one PID channel...
+static pid_strudt pid_heater_1;
+static pid_struct pid_heater_aux;
+static pid_struct pid_heatbed;
 
 /******************************************************************************
  * FUNCTION PROTOTYPES
@@ -166,39 +166,39 @@ void heater_1_init(void);
 void heater_aux_init(void);
 void heatbed_init(void);
 
-void heater_0_ON(double setpoint);
-void heater_1_ON(double setpoint);
-void heater_aux_ON(double setpoint);
-void heatbed_ON(double setpoint);
+static void heater_0_ON(double setpoint);
+static void heater_1_ON(double setpoint);
+static void heater_aux_ON(double setpoint);
+static void heatbed_ON(double setpoint);
 
-void heater_0_OFF(uint8_t state, uint8_t code);
-void heater_1_OFF(uint8_t state, uint8_t code);
-void heater_aux_OFF(uint8_t state, uint8_t code);
-void heatbed_OFF(uint8_t state, uint8_t code);
+static void heater_0_OFF(uint8_t state, uint8_t code);
+static void heater_1_OFF(uint8_t state, uint8_t code);
+static void heater_aux_OFF(uint8_t state, uint8_t code);
+static void heatbed_OFF(uint8_t state, uint8_t code);
 
-void heater_0_callback(void);
-void heater_1_callback(void);
-void heater_aux_callback(void);
-void heatbed_callback(void);
+extern void heater_0_callback(void);
+extern void heater_1_callback(void);
+extern void heater_aux_callback(void);
+extern void heatbed_callback(void);
 
-void set_pwm(double pwm_duty_cycle,uint8_t chan);
+static void set_pwm(double pwm_duty_cycle,uint8_t chan);
 
 
 
-void pid_heater0_init();
-void pid_heater1_init();
-void pid_heaterAux_init();
-void pid_heatbed_init();
+static void pid_heater0_init();
+static void pid_heater1_init();
+static void pid_heaterAux_init();
+static void pid_heatbed_init();
 
-void pid_heater0_reset();
-void pid_heater1_reset();
-void pid_heaterAux_reset();
-void pid_heatbed_reset();
+static void pid_heater0_reset();
+static void pid_heater1_reset();
+static void pid_heaterAux_reset();
+static void pid_heatbed_reset();
 
-double pid_heater0_calculate(double setpoint,double temperature);
-double pid_heater1_calculate(double setpoint,double temperature);
-double pid_heaterAux_calulate(double setpoint,double temperature);
-double pid_heatbed_calculae(double setpoint,double temperature);
+static double pid_heater0_calculate(double setpoint,double temperature);
+static double pid_heater1_calculate(double setpoint,double temperature);
+static double pid_heaterAux_calulate(double setpoint,double temperature);
+static double pid_heatbed_calculae(double setpoint,double temperature);
 
 
 #endif	// End of include

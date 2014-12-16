@@ -21,9 +21,19 @@ Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
 */
 
 #include "heaterpid.h"
+#include "hardware.h"
+#include "pwm.h"
 #include "util.h"
 #include <string.h>
 #include <math.h>
+
+// Motate Pin delclarations
+PWMOutputPin<kHeater_0> heater_0_pin(kPWMPinInverted);
+PWMOutputPin<kHeater_1> heater_1_pin(kPWMPinInverted);
+PWMOutputPin<kAux_heat> heater_aux_pin(kPWMPinInverted);
+PWMOutputPin<kHeat_Bed> heatbed_pin(kPWMPinInverted);
+PWMOutputPin<kNozzle_Fan0> fan0_pwm_pin(kPWMPinInverted);
+PWMOutputPin<kNozzle_Fan1> fan1_pwm_pin(kPWMPinInverted);
 
 /**** Heater Functions ****/
 /*
@@ -229,6 +239,7 @@ void heater_0_callback()
 	if ((heater_0.state == HEATER_OFF) || (heater_0.state == HEATER_SHUTDOWN)) { return;}
 
   //rpt_readout(); Replace with TinyG2 compliant data printout code
+  sprintf((char *)nv.token, "g%2d%c", 53+i, ("xyzabc")[j]);
 
 	// get current temperature from the sensor
 	heater_0.temperature = thermocouple_0_get_temp();
@@ -539,24 +550,44 @@ void heatbed_callback()
   }
 }// end function
 
+/*
+PWMOutputPin<kHeater_0> heater_0_pin(kPWMPinInverted);
+PWMOutputPin<kHeater_1> heater_1_pin(kPWMPinInverted);
+PWMOutputPin<kAux_heat> heater_aux_pin(kPWMPinInverted);
+PWMOutputPin<kHeat_Bed> heatbed_pin(kPWMPinInverted);
+PWMOutputPin<kNozzle_Fan0> fan0_pwm_pin(kPWMPinInverted);
+PWMOutputPin<kNozzle_Fan1> fan1_pwm_pin(kPWMPinInverted);
+*/
+
 
 // Heater and Fan PWM signal channel control
 void set_pwm(double pwm_duty_cycle,uint8_t chan){
   switch(chan){
     case 0:        // Heater-0 PWM Control Signal
+      heater_0_pin.setFrequency(1000);
+      heater_0_pin = pwm_duty_cycle;
     break;
     case 1:        // Heater-1 PWM Control Signal
+      heater_1_pin.setFrequency(1000);
+      heater_1_pin = pwm_duty_cycle;
     break;
     case 2:        // Heater-Aux PWM Control Signal
+      heater_aux_pin.setFrequency(1000);
+      heater_aux_pin = pwm_duty_cycle;
     break;
     case 3:        // Heatbed PWM Control Signal
+      heatbed_pin.setFrequency(1000);
+      heatbed_pin = pwm_duty_cycle;
     break;
     case 4:        // Fan-0 PWM Control Signal
+      fan0_pwm_pin.setFrequency(1000);
+      fan0_pwm_pin = pwm_duty_cycle;
     break;
     case 5:        // Fan-1 PWM Control Signal
+      fan0_pwm_pin.setFrequency(1000);
+      fan0_pwm_pin = pwm_duty_cycle;
     break;
   }
-
 }
 
 
