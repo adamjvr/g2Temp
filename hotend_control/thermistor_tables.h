@@ -1,9 +1,8 @@
-
 /*
 
 Copyright (c) 2012 - 2013 Robert Giseburt
 Copyright (c) 2013 Alden S. Hart Jr.
-Copyright (c) 2014 Adam Vadala-Roth
+Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions onl
 
  This file is part of the TinyG2 project.
 

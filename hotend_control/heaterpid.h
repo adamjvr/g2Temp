@@ -1,27 +1,27 @@
 /*
 
-# Copyright (c) 2012 - 2013 Robert Giseburt
-# Copyright (c) 2013 Alden S. Hart Jr.
-#
-# This file is part of the TinyG2 project.
-#
-# This file ("the software") is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2 as published by the
-# Free Software Foundation. You should have received a copy of the GNU General Public
-# License, version 2 along with the software.  If not, see <http://www.gnu.org/licenses/>.
-#
-# THE SOFTWARE IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY
-# WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-# SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-# OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
+Copyright (c) 2012 - 2013 Robert Giseburt
+Copyright (c) 2013 Alden S. Hart Jr.
+Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
+
+ This file is part of the TinyG2 project.
+
+ This file ("the software") is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License, version 2 as published by the
+ Free Software Foundation. You should have received a copy of the GNU General Public
+ License, version 2 along with the software.  If not, see <http://www.gnu.org/licenses/>.
+
+ THE SOFTWARE IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY
+ WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+ SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+ OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
 
 #ifndef HEATERPID_H_ONCE
 #define HEATERPID_H_ONCE
-
 
 /******************************************************************************
  * PARAMETERS AND SETTINGS
@@ -148,14 +148,14 @@ struct pid_struct {
 
 
 // allocations
-heater_t heater;      // allocate one heater...
-heater_t heater1;     // Allocate second heater
-heater_t aux;         // Allocate aux heater
+heater_t heater_0;      // allocate one heater...
+heater_t heater_1;     // Allocate second heater
+heater_t heater_aux;         // Allocate aux heater
 heater_t heatbed;
-pid_struct pid;						// allocate one PID channel...
-pid_strudt pid1;
-pid_struct pid2;
-pid_struct pid3;
+pid_struct pid_heater_0;						// allocate one PID channel...
+pid_strudt pid_heater_1;
+pid_struct pid_heater_aux;
+pid_struct pid_heatbed;
 
 /******************************************************************************
  * FUNCTION PROTOTYPES
@@ -180,6 +180,10 @@ void heater_0_callback(void);
 void heater_1_callback(void);
 void heater_aux_callback(void);
 void heatbed_callback(void);
+
+void set_pwm(double pwm_duty_cycle,uint8_t chan);
+
+
 
 void pid_heater0_init();
 void pid_heater1_init();

@@ -1,23 +1,23 @@
 /*
 
-# Copyright (c) 2012 - 2013 Robert Giseburt
-# Copyright (c) 2013 Alden S. Hart Jr.
-# Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
-#
-# This file is part of the TinyG2 project.
-#
-# This file ("the software") is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2 as published by the
-# Free Software Foundation. You should have received a copy of the GNU General Public
-# License, version 2 along with the software.  If not, see <http://www.gnu.org/licenses/>.
-#
-# THE SOFTWARE IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY
-# WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-# SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-# OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
+Copyright (c) 2012 - 2013 Robert Giseburt
+Copyright (c) 2013 Alden S. Hart Jr.
+Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
+
+ This file is part of the TinyG2 project.
+
+ This file ("the software") is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License, version 2 as published by the
+ Free Software Foundation. You should have received a copy of the GNU General Public
+ License, version 2 along with the software.  If not, see <http://www.gnu.org/licenses/>.
+
+ THE SOFTWARE IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY
+ WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+ SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+ OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
 
 #ifndef SENSORS_H
@@ -123,6 +123,14 @@ void thermocouple_0_read(void);
 void thermocouple_1_read(void);
 void thermistor_0_read(void);
 void thermistor_1_read(void);
+
+//Sensor Hardware Control
+// SPI/CS for MAX31588 Type K Cold Reference Thermocouple ADCs
+// ADC Channel's for Thermistors
+uint16_t thermocouple_0_adc_read();
+uint16_t thermocouple_1_adc_read();
+uint16_t thermistor_0_adc_read();
+uint16_t thermistor_1_adc_read();
 
 // Getters
 // Get sensor state

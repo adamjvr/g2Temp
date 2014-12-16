@@ -1,23 +1,23 @@
 /*
 
-# Copyright (c) 2012 - 2013 Robert Giseburt
-# Copyright (c) 2013 Alden S. Hart Jr.
-# Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
-#
-# This file is part of the TinyG2 project.
-#
-# This file ("the software") is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, version 2 as published by the
-# Free Software Foundation. You should have received a copy of the GNU General Public
-# License, version 2 along with the software.  If not, see <http://www.gnu.org/licenses/>.
-#
-# THE SOFTWARE IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY
-# WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
-# SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
-# OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
+Copyright (c) 2012 - 2013 Robert Giseburt
+Copyright (c) 2013 Alden S. Hart Jr.
+Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
+
+ This file is part of the TinyG2 project.
+
+ This file ("the software") is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License, version 2 as published by the
+ Free Software Foundation. You should have received a copy of the GNU General Public
+ License, version 2 along with the software.  If not, see <http://www.gnu.org/licenses/>.
+
+ THE SOFTWARE IS DISTRIBUTED IN THE HOPE THAT IT WILL BE USEFUL, BUT WITHOUT ANY
+ WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+ SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+ OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 */
 
 #include <stdio.h>
@@ -209,7 +209,7 @@ void thermocouple_1_callback(void){
   }
 
   // get a sample and return if still in the reading period
-  thermocouple_1.sample[thermocouple_1.sample_idx] = _sensor_sample(ADC_CHANNEL);
+  thermocouple_1.sample[thermocouple_1.sample_idx] = _thermocouple_0_sample(ADC_CHANNEL);
   if ((++thermocouple_1.sample_idx) < SENSOR_SAMPLES) { return; }
 
   // process the array to clean up samples
@@ -260,9 +260,9 @@ static inline double _thermocouple_0_sample(uint8_t adc_channel)
 	double random_gain = 5;
 	double random_variation = ((double)(rand() - RAND_MAX/2) / RAND_MAX/2) * random_gain;
 	double reading = 60 + random_variation;
-	return (((double)reading * SENSOR_SLOPE) + SENSOR_OFFSET);	// useful for testing the math
+	return (((double)reading) + SENSOR_OFFSET);	// useful for testing the math
 #else
-	return (((double)adc_read() * SENSOR_SLOPE) + SENSOR_OFFSET);
+	return (((double)thermocouple_1_adc_read()) + SENSOR_OFFSET);
 #endif
 }
 
@@ -273,8 +273,31 @@ static inline double _thermocouple_1_sample(uint8_t adc_channel)
 	double random_gain = 5;
 	double random_variation = ((double)(rand() - RAND_MAX/2) / RAND_MAX/2) * random_gain;
 	double reading = 60 + random_variation;
-	return (((double)reading * SENSOR_SLOPE) + SENSOR_OFFSET);	// useful for testing the math
+	return (((double)reading) + SENSOR_OFFSET);	// useful for testing the math
 #else
-	return (((double)adc_read() * SENSOR_SLOPE) + SENSOR_OFFSET);
+	return (((double)thermocouple_1_adc_read()) + SENSOR_OFFSET);
 #endif
+}
+
+
+uint16_t thermocouple_0_adc_read(){
+  uint16_t tc0_val;
+  return tc0_val;
+}
+
+
+uint16_t thermocouple_1_adc_read(){
+  uint16_t tc1_val;
+  return tc1_val;
+}
+
+uint16_t thermistor_0_adc_read(){
+  uint16_t tr0_val;
+  return tr0_val;
+
+}
+
+uint16_t thermistor_1_adc_read(){
+  uint16_t tr1_val;
+  return tr1_val;
 }
