@@ -23,10 +23,11 @@ Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
 #include "heaterpid.h"
 #include "sensors.h"
 
-bool heater_0_run false;
-bool heater_1_run false;
-bool heater_aux_run false;
-bool heatbed_run false;
+// Loop Controller Boolean flags
+static bool _heater_0_run_FLAG = false;
+static bool _heater_1_run_FLAG = false;
+static bool _heater_aux_run_FLAG = false;
+static bool _heatbed_run_FLAG = false;
 
 timer_number kTempControllerTimer = 0;
 timer_number kTempControllerTimerChan = 0;
@@ -35,77 +36,79 @@ TimerChannel<kTempControllerTimer, kTempControllerTimerChan> TempTimer(kTimerUpT
 
 // Runs PID Controller for Heater-0 on Tigershark 3D PROTOTYPE 1
 void controller_heater_0(){
-  heater_0_run = true;
+  _heater_0_run_FLAG = true;
   heater_0_init();              // Initialized Heater 0 Device (Nozzle 0)
   thermocouple_0_init();        // Initialize Thermocouple Sensor 0
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heater-0 Activated")[j]);  // print Heater Status
-  while(heater_0_run==true){
+  while(_heater_0_run_FLAG==true){
     tick_callback_heater_0();
   }
 }// end method
 
 // Runs PID Controller for Heater-1 on Tigershark 3D PROTOTYPE 1
 void controller_heater_1(){
-  heater_1_run = true;
+  _heater_1_run_FLAG = true;
   heater_1_init();              // Initialized Heater 1 Device (Nozzle 1)
   thermocouple_1_init();        // Initialize Thermocouple Sensor 0
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heater-0 Activated")[j]); // print Heater Status
-  while(heater_1_run==true){
+  while(_heater_1_run_FLAG==true){
     tick_callback_heater_1();
   }
 }// end method
 
 // Runs PID Controller for Heater-Aux on Tigershark 3D PROTOTYPE 1
 void controller_heater_aux(){
-  heater_aux_run true;
+  _heater_aux_run_FLAG true;
   heater_aux_init();            // Initialized Aux Heater Device (build chamber heater)
   thermistor_0_init();          // Initialize Thermistor Sensor 0 ATSAM ADC
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Aux Heater Activated")[j]); // print Heater Status
-  while(heater_aux_run==true){
+  while(_heater_aux_run_FLAG==true){
     tick_callback_heater_aux();
   }
 }// end method
 
 // Runs PID Controller for Heatbed on Tigershark 3D PROTOTYPE 1
 void controller_heatbed(){
-  heatbed_run true;
+  _heatbed_run_FLAG true;
   heatbed_init();               // Initialized Heatbed Device
   thermistor_0_init();          // Initialize Thermistor Sensor 1 ATSAM ADC
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heatbed Activated")[j]); // print Heater Status
-  while(heatbed_run==true){
+  while(_heatbed_run_FLAG==true){
     tick_callback_heatbed();
   } // end while
 }// end method
 
 
 void _stop_controller_heater_0(){
-  heater_0_run false
+  _heater_0_run_FLAG = false;
   heater_0_OFF();
-  thermocouple_0_OFF();
 }
 
 void _stop_controller_heater_1(){
-  heater_1_run false
+  _heater_1_run_FLAG = false;
   heater_1_OFF();
-  thermocouple_1_OFF();
 }
 
 void _stop_controller_heater_aux(){
-  heater_aux_run false;
+  _heater_aux_run_FLAG = false;
   heater_aux_OFF();
-  thermistor_0_OFF();
 }
 
 void _stop_controller_heatbedv(){
-  heatbed_run false;
+  _heatbed_run_FLAG = false;
   heatbed_OFF();
-  theristor_1_OFF();
 }
 
 //Motate Intterrupt Controller
 MOTATE_TIMER_INTERRUPT(void){
-  device.tick_flag = true;
-}  // end interrupt controller
+  int16_t interrupted_channel;
+  TimerChannelInterruptOptions interrupt_cause = getInterruptCause(interrupted_channel);
+  if (interrupt_cause == kInterruptOnMatch) {
+    device.tick_flag = true;
+  } else if (interrupt_cause == kInterruptOnOverflow) {
+    device.tick_flag = false;
+  }// end else-if
+}// end interrupt controller
 
 
 //MOTATE timer which one is free for this ?

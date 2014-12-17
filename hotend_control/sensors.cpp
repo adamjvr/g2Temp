@@ -39,18 +39,30 @@ InputPin<kThermistor_0> _TR_0_AN;
 InputPin<kThermistor_1> _TR_1_AN;
 
 // Thermocouple 0 (MAX31588 Type K) Sensor Sample
-static inline double _thermocouple_0_sample(uint8_t adc_channel);
+static inline double _thermocouple_0_sample(void);
 // Thermocouple 1 (MAX31588 Type K) Sensor Sample
-static inline double _thermocouple_1_sample(uint8_t adc_channel);
+static inline double _thermocouple_1_sample(void);
 // Thermistor 0 Sensor Sample
-static inline double _thermistor_0_sample(uint8_t adc_channel);
+static inline double _thermistor_0_sample(void);
 // Thermistor 1 Sensor Sample
-static inline double _thermistor_1_sample(uint8_t adc_channel);
+static inline double _thermistor_1_sample(void);
 
+//Sensor Hardware Control
+// SPI/CS for MAX31588 Type K Cold Reference Thermocouple ADCs
+// ADC Channel's for Thermistors
+
+// MAX31588 SPI control, returns TC value
+static inline uint16_t thermocouple_0_adc_read();
+// MAX31588 SPI control, returns TC value
+static inline uint16_t thermocouple_1_adc_read();
+// Samples Thermistor_0 ADC Channel, returns TR Value
+static inline uint16_t thermistor_0_adc_read();
+// Samples Thermistor_1 ADC Channel, returns TR Value
+static inline uint16_t thermistor_1_adc_read();
 
 
 // Sensor initialization
-void thermocouple_0_init(void){
+extern void thermocouple_0_init(void){
   memset(&thermoucouple_0, 0, sizeof(sensor_t));
 	thermocouple_0.temperature = ABSOLUTE_ZERO;
 	thermocouple_0.sample_variance_max = SENSOR_SAMPLE_VARIANCE_MAX;
@@ -61,7 +73,7 @@ void thermocouple_0_init(void){
 }
 
 
-void thermocouple_1_init(void){
+extern void thermocouple_1_init(void){
   memset(&thermoucouple_1, 0, sizeof(sensor_t));
   thermocouple_1.temperature = ABSOLUTE_ZERO;
   thermocouple_1.sample_variance_max = SENSOR_SAMPLE_VARIANCE_MAX;
@@ -72,7 +84,7 @@ void thermocouple_1_init(void){
 }
 
 
-void thermistor_0_init(void){
+extern void thermistor_0_init(void){
   memset(&thermistor_0, 0, sizeof(sensor_t));
   thermistor_0.temperature = ABSOLUTE_ZERO;
   thermistor_0.sample_variance_max = SENSOR_SAMPLE_VARIANCE_MAX;
@@ -83,7 +95,7 @@ void thermistor_0_init(void){
 }
 
 
-void thermistor_1_init(void){
+extern void thermistor_1_init(void){
   memset(&thermistor_1, 0, sizeof(sensor_t));
   thermistor_1.temperature = ABSOLUTE_ZERO;
   thermistor_1.sample_variance_max = SENSOR_SAMPLE_VARIANCE_MAX;
@@ -169,7 +181,7 @@ uint8_t thermistor_1_get_state() { return (thermistor_1.state);}
 uint8_t thermistor_1_get_code() { return (thermistor_1.code);}
 
 
-void thermocouple_0_callback(void){
+extern void thermocouple_0_callback(void){
   // cases where you don't execute the callback:
 	if ((thermocouple_0.state == SENSOR_OFF) || (thermocouple_0.code != SENSOR_TAKING_READING)) {
 		return;
@@ -211,7 +223,7 @@ void thermocouple_0_callback(void){
 	}
 }
 
-void thermocouple_1_callback(void){
+extern void thermocouple_1_callback(void){
   // cases where you don't execute the callback:
   if ((thermocouple_1.state == SENSOR_OFF) || (thermocouple_1.code != SENSOR_TAKING_READING)) {
     return;
@@ -254,12 +266,88 @@ void thermocouple_1_callback(void){
 }
 
 
-void thermistor_0_callback(void){
+extern void thermistor_0_callback(void){
+  // cases where you don't execute the callback:
+  if ((thermistor_0.state == SENSOR_OFF) || (thermistor_0.code != SENSOR_TAKING_READING)) {
+    return;
+  }
 
-}
-void thermistor_1_callback(void){
+  // get a sample and return if still in the reading period
+  thermistor_0.sample[thermistor_0.sample_idx] = _thermistor_0_sample(ADC_CHANNEL);
+  if ((++thermistor_0.sample_idx) < SENSOR_SAMPLES) { return; }
 
+  // process the array to clean up samples
+  double mean;
+  thermistor_0.std_dev = std_dev(thermistor_0.sample, SENSOR_SAMPLES, &mean);
+  if (thermistor_0.std_dev > thermistor_0.reading_variance_max) {
+    thermistor_0.state = SENSOR_ERROR;
+    thermistor_0.code = SENSOR_ERROR_BAD_READINGS;
+    return;
+  }
+
+  // reject the outlier samples and re-compute the average
+  thermistor_0.samples = 0;
+  thermistor_0.temperature = 0;
+  for (uint8_t i=0; i<SENSOR_SAMPLES; i++) {
+    if (fabs(thermistor_0.sample[i] - mean) < (thermistor_0.sample_variance_max * thermistor_0.std_dev)) {
+      thermistor_0.temperature += thermistor_0.sample[i];
+      thermistor_0.samples++;
+    }
+  }
+  thermistor_0.temperature /= sensor.samples;// calculate mean temp w/o the outliers
+  thermistor_0.state = SENSOR_HAS_DATA;
+  thermistor_0.code = SENSOR_IDLE;			// we are done. Flip it back to idle
+
+  // process the exception cases
+  if (thermistor_0.temperature > SENSOR_DISCONNECTED_TEMPERATURE) {
+    thermistor_0.state = SENSOR_ERROR;
+    thermistor_0.code = SENSOR_ERROR_DISCONNECTED;
+  } else if (thermistor_0.temperature < SENSOR_NO_POWER_TEMPERATURE) {
+    thermistor_0.state = SENSOR_ERROR;
+    thermistor_0.code = SENSOR_ERROR_NO_POWER;
+  }
 }
+extern void thermistor_1_callback(void){
+  // cases where you don't execute the callback:
+  if ((thermistor_1.state == SENSOR_OFF) || (thermistor_1.code != SENSOR_TAKING_READING)) {
+    return;
+  }
+
+  // get a sample and return if still in the reading period
+  thermistor_1.sample[thermistor_1.sample_idx] = _thermistor_1_sample(ADC_CHANNEL);
+  if ((++thermistor_1.sample_idx) < SENSOR_SAMPLES) { return; }
+
+  // process the array to clean up samples
+  double mean;
+  thermistor_1.std_dev = std_dev(thermistor_1.sample, SENSOR_SAMPLES, &mean);
+  if (thermistor_1.std_dev > thermistor_1.reading_variance_max) {
+    thermistor_1.state = SENSOR_ERROR;
+    thermistor_1.code = SENSOR_ERROR_BAD_READINGS;
+    return;
+  }
+
+  // reject the outlier samples and re-compute the average
+  thermistor_1.samples = 0;
+  thermistor_1.temperature = 0;
+  for (uint8_t i=0; i<SENSOR_SAMPLES; i++) {
+    if (fabs(thermistor_1.sample[i] - mean) < (thermistor_1.sample_variance_max * thermistor_1.std_dev)) {
+      thermistor_1.temperature += thermistor_1.sample[i];
+      thermistor_1.samples++;
+    }
+  }
+  thermistor_1.temperature /= sensor.samples;// calculate mean temp w/o the outliers
+  thermistor_1.state = SENSOR_HAS_DATA;
+  thermistor_1.code = SENSOR_IDLE;			// we are done. Flip it back to idle
+
+  // process the exception cases
+  if (thermistor_1.temperature > SENSOR_DISCONNECTED_TEMPERATURE) {
+    thermistor_1.state = SENSOR_ERROR;
+    thermistor_1.code = SENSOR_ERROR_DISCONNECTED;
+  } else if (thermistor_1.temperature < SENSOR_NO_POWER_TEMPERATURE) {
+    thermistor_1.state = SENSOR_ERROR;
+    thermistor_1.code = SENSOR_ERROR_NO_POWER;
+  }
+}// end function
 
 
 
@@ -271,7 +359,7 @@ static inline double _thermocouple_0_sample(uint8_t adc_channel)
 	double reading = 60 + random_variation;
 	return (((double)reading) + SENSOR_OFFSET);	// useful for testing the math
 #else
-	return (((double)thermocouple_1_adc_read()) + SENSOR_OFFSET);
+	return (((double)thermocouple_0_adc_read()) + SENSOR_OFFSET);
 #endif
 }
 
@@ -284,7 +372,31 @@ static inline double _thermocouple_1_sample(uint8_t adc_channel)
 	double reading = 60 + random_variation;
 	return (((double)reading) + SENSOR_OFFSET);	// useful for testing the math
 #else
-	return (((double)thermocouple_1_adc_read()) + SENSOR_OFFSET);
+  	return (((double)thermocouple_1_adc_read()) + SENSOR_OFFSET);
+#endif
+}
+
+static inline double _thermistor_0_sample(uint8_t adc_channel)
+{
+#ifdef __TEST
+  double random_gain = 5;
+  double random_variation = ((double)(rand() - RAND_MAX/2) / RAND_MAX/2) * random_gain;
+  double reading = 60 + random_variation;
+  return (((double)reading) + SENSOR_OFFSET);	// useful for testing the math
+#else
+  return (((double)thermistor_0_adc_read()) + SENSOR_OFFSET);
+#endif
+}
+
+static inline double _thermistor_1_sample(uint8_t adc_channel)
+{
+#ifdef __TEST
+  double random_gain = 5;
+  double random_variation = ((double)(rand() - RAND_MAX/2) / RAND_MAX/2) * random_gain;
+  double reading = 60 + random_variation;
+  return (((double)reading) + SENSOR_OFFSET);	// useful for testing the math
+#else
+  return (((double)thermistor_1_adc_read()) + SENSOR_OFFSET);
 #endif
 }
 
@@ -297,7 +409,7 @@ Motate::SPI<kThermocouple_CS_0> _TC_CS_0;
 Motate::SPI<kThermocouple_CS_1> _TC_CS_1;
 */
 
-uint16_t thermocouple_0_adc_read(){
+static inline uint16_t thermocouple_0_adc_read(){
   uint16_t tc0_val=0;
   _TC_CS_0.write(fales); // Logic Low enable MAX31588 SPI ADC
   // Rob SPI Help ?
@@ -306,7 +418,7 @@ uint16_t thermocouple_0_adc_read(){
 }
 
 
-uint16_t thermocouple_1_adc_read(){
+static inline uint16_t thermocouple_1_adc_read(){
   uint16_t tc1_val=0;
   _TC_CS_1.write(fales); // Logic Low enable MAX31588 SPI ADC
   // Rob SPI Help ?
@@ -314,7 +426,7 @@ uint16_t thermocouple_1_adc_read(){
   return tc1_val;
 }
 
-uint16_t thermistor_0_adc_read(){
+static inline uint16_t thermistor_0_adc_read(){
   uint16_t tr0_val=0;
   tr0_val=_TR_0_AN.getInputValue();
   //ADC Code
@@ -322,7 +434,7 @@ uint16_t thermistor_0_adc_read(){
 
 }
 
-uint16_t thermistor_1_adc_read(){
+static inline uint16_t thermistor_1_adc_read(){
   uint16_t tr1_val=0;
   tr1_val=_TR_1_AN.getInputValue();
   //ADC Code

@@ -45,7 +45,7 @@ PWMOutputPin<kNozzle_Fan1> fan1_pwm_pin(kPWMPinInverted);
  *	heater_init() sets default values that may be overwritten via Kinen communications.
  *	heater_on() sets initial values used regardless of any changes made to settings.
  */
-void heater_0_init()
+extern void heater_0_init()
 {
 	// initialize heater, start PID and PWM
 	// note: PWM and ADC are initialized as part of the device init
@@ -60,7 +60,7 @@ void heater_0_init()
 	pid_heater0_init();
 }
 
-void heater_1_init()
+extern void heater_1_init()
 {
   // initialize heater, start PID and PWM
   // note: PWM and ADC are initialized as part of the device init
@@ -75,7 +75,7 @@ void heater_1_init()
   pid_heater1_init();
 }
 
-void heater_aux_init()
+extern void heater_aux_init()
 {
   // initialize heater, start PID and PWM
   // note: PWM and ADC are initialized as part of the device init
@@ -90,7 +90,7 @@ void heater_aux_init()
   pid_heaterAux_init();
 }
 
-void heatbed_init()
+extern void heatbed_init()
 {
   // initialize heater, start PID and PWM
   // note: PWM and ADC are initialized as part of the device init
@@ -105,7 +105,7 @@ void heatbed_init()
   pid_heatbed_init();
 }
 
-void heater_0_ON(double setpoint)
+static void heater_0_ON(double setpoint)
 {
 	// no action if heater is already on
 	if ((heater_0.state == HEATER_HEATING) || (heater_0.state == HEATER_REGULATED)) {
@@ -127,7 +127,7 @@ void heater_0_ON(double setpoint)
 	heater_0.state = HEATER_HEATING;
 }
 
-void heater_1_ON(double setpoint)
+static void heater_1_ON(double setpoint)
 {
   // no action if heater is already on
   if ((heater_1.state == HEATER_HEATING) || (heater_1.state == HEATER_REGULATED)) {
@@ -149,7 +149,7 @@ void heater_1_ON(double setpoint)
   heater_1.state = HEATER_HEATING;
 }
 
-void heater_aux_ON(double setpoint)
+static void heater_aux_ON(double setpoint)
 {
   // no action if heater is already on
   if ((heater_aux.state == HEATER_HEATING) || (heater_aux.state == HEATER_REGULATED)) {
@@ -171,7 +171,7 @@ void heater_aux_ON(double setpoint)
   heater_aux.state = HEATER_HEATING;
 }
 
-void heatbed_ON(double setpoint)
+static void heatbed_ON(double setpoint)
 {
   // no action if heater is already on
   if ((heatbed.state == HEATER_HEATING) || (heatbed.state == HEATER_REGULATED)) {
@@ -192,33 +192,29 @@ void heatbed_ON(double setpoint)
   heatbed.state = HEATER_HEATING;
 }
 
-
-
 void heater_0_off(uint8_t state, uint8_t code)
 {
 	// Replace with function that shuts off PWM on PC22
-  set_pwm(0.0,0);					 // stop sending current to the heater
-  thermocouple_0_OFF();		// stop taking readings
+  set_pwm(0.0,0);					    // stop sending current to the heater
+  thermocouple_0_OFF();		    // stop taking readings
 	heater_0.state = state;
 	heater_0.code = code;
-
 }
 
 void heater_1_off(uint8_t state, uint8_t code)
 {
   // Replace with function that shuts off PWM on PC21
   set_pwm(0.0,1);							// stop sending current to the heater
-	thermocouple_1_OFF();   // stop taking readings
+	thermocouple_1_OFF();        // stop taking readings
   heater_1.state = state;
   heater_1.code = code;
-
 }
 
 void heater_aux_off(uint8_t state, uint8_t code)
 {
   // Replace with function that shuts off PWM on PC20
   set_pwm(0.0,2);							// stop sending current to the heater
-  thermistor_0_OFF();						// stop taking readings
+  thermistor_0_OFF();					// stop taking readings
   heater_aux.state = state;
   heater_aux.code = code;
 }
@@ -228,12 +224,12 @@ void heatbed_off(uint8_t state, uint8_t code)
 {
   // Replace with function that shuts off PWM on PB25
   set_pwm(0.0,3);							// stop sending current to the heater
-  thermistor_1_OFF();		 // stop taking readings
+  thermistor_1_OFF();		      // stop taking readings
   heatbed.state = state;
   heatbed.code = code;
 }
 
-void heater_0_callback()
+extern void heater_0_callback()
 {
 	// catch the no-op cases
 	if ((heater_0.state == HEATER_OFF) || (heater_0.state == HEATER_SHUTDOWN)) { return;}
@@ -313,7 +309,7 @@ void heater_0_callback()
 	}
 }// end function
 
-void heater_1_callback()
+extern void heater_1_callback()
 {
   // catch the no-op cases
   if ((heater_1.state == HEATER_OFF) || (heater_1.state == HEATER_SHUTDOWN)) { return;}
@@ -392,7 +388,7 @@ void heater_1_callback()
   }
 }// end function
 
-void heater_aux_callback()
+extern void heater_aux_callback()
 {
   // catch the no-op cases
   if ((heater_aux.state == HEATER_OFF) || (heater_aux.state == HEATER_SHUTDOWN)) { return;}
@@ -471,7 +467,7 @@ void heater_aux_callback()
   }
 }// end function
 
-void heatbed_callback()
+extern void heatbed_callback()
 {
   // catch the no-op cases
   if ((heatbed.state == HEATER_OFF) || (heatbed.state == HEATER_SHUTDOWN)) { return;}
@@ -561,7 +557,7 @@ PWMOutputPin<kNozzle_Fan1> fan1_pwm_pin(kPWMPinInverted);
 
 
 // Heater and Fan PWM signal channel control
-void set_pwm(double pwm_duty_cycle,uint8_t chan){
+static void set_pwm(double pwm_duty_cycle,uint8_t chan){
   switch(chan){
     case 0:        // Heater-0 PWM Control Signal
       heater_0_pin.setFrequency(1000);
@@ -597,7 +593,7 @@ void set_pwm(double pwm_duty_cycle,uint8_t chan){
  * pid_reset() - reset PID values to cold start
  * pid_calc() - derived from: http://www.embeddedheaven.com/pid-control-algorithm-c-language.htm
  */
-void pid_heater0_init()
+static void pid_heater0_init()
 {
 	memset(&pid, 0, sizeof(struct pid_struct));
 	pid_heater_0.Kp = PID_Kp;
@@ -608,7 +604,7 @@ void pid_heater0_init()
 	pid_heater_0.state = PID_ON;
 }
 
-void pid_heater1_init()
+static void pid_heater1_init()
 {
   memset(&pid, 0, sizeof(struct pid_struct));
   pid_heater_1.Kp = PID_Kp;
@@ -619,7 +615,7 @@ void pid_heater1_init()
   pid_heater_1.state = PID_ON;
 }
 
-void pid_heaterAux_init()
+static void pid_heaterAux_init()
 {
   memset(&pid, 0, sizeof(struct pid_struct));
   pid_heater_aux.Kp = PID_Kp;
@@ -630,7 +626,7 @@ void pid_heaterAux_init()
   pid_heater_aux.state = PID_ON;
 }
 
-void pid_heatbed_init()
+static void pid_heatbed_init()
 {
   memset(&pid, 0, sizeof(struct pid_struct));
   pid_heatbed.Kp = PID_Kp;
@@ -642,35 +638,35 @@ void pid_heatbed_init()
 }
 
 
-void pid_heater0_reset()
+static void pid_heater0_reset()
 {
 	pid_heater_0.output = 0;
 	pid_heater_0.integral = PID_INITIAL_INTEGRAL;
 	pid_heater_0.prev_error = 0;
 }
 
-void pid_heater1_reset()
+static void pid_heater1_reset()
 {
   pid_heater_1.output = 0;
   pid_heater_1.integral = PID_INITIAL_INTEGRAL;
   pid_heater_1.prev_error = 0;
 }
 
-void pid_heaterAux_reset()
+static void pid_heaterAux_reset()
 {
   pid_heater_aux.output = 0;
   pid_heater_aux.integral = PID_INITIAL_INTEGRAL;
   pid_heater_aux.prev_error = 0;
 }
 
-void pid_heatbed_reset()
+static void pid_heatbed_reset()
 {
   pid_heatbed.output = 0;
   pid_heatbed.integral = PID_INITIAL_INTEGRAL;
   pid_heatbed.prev_error = 0;
 }
 
-double pid_heater0_calculate(double setpoint,double temperature)
+static double pid_heater0_calculate(double setpoint,double temperature)
 {
 	if (pid_heater_0.state == PID_OFF) { return (pid_heater_0.output_min);}
 
@@ -693,7 +689,7 @@ double pid_heater0_calculate(double setpoint,double temperature)
 }// end fucntion
 
 
-double pid_heater_calculate(double setpoint,double temperature)
+static double pid_heater_calculate(double setpoint,double temperature)
 {
   if (pid_heater_1.state == PID_OFF) { return (pid_heater_1.output_min);}
 
@@ -715,7 +711,7 @@ double pid_heater_calculate(double setpoint,double temperature)
   return pid_heater_1.output;
 }// end fucntion
 
-double pid_heater_calculate(double setpoint,double temperature)
+static double pid_heater_calculate(double setpoint,double temperature)
 {
   if (pid_heater_aux.state == PID_OFF) { return (pid_heater_aux.output_min);}
 
@@ -738,7 +734,7 @@ double pid_heater_calculate(double setpoint,double temperature)
 }// end fucntion
 
 
-double pid_heater_calculate(double setpoint,double temperature)
+static double pid_heater_calculate(double setpoint,double temperature)
 {
   if (pid_heatbed.state == PID_OFF) { return (pid_heatbed.output_min);}
 

@@ -166,10 +166,10 @@ extern void heater_1_init(void);
 extern void heater_aux_init(void);
 extern void heatbed_init(void);
 
-static void heater_0_ON(double setpoint);
-static void heater_1_ON(double setpoint);
-static void heater_aux_ON(double setpoint);
-static void heatbed_ON(double setpoint);
+void heater_0_ON(double setpoint);
+void heater_1_ON(double setpoint);
+void heater_aux_ON(double setpoint);
+void heatbed_ON(double setpoint);
 
 void heater_0_OFF(uint8_t state, uint8_t code);
 void heater_1_OFF(uint8_t state, uint8_t code);

@@ -103,34 +103,27 @@ sensor_t thermistor_1;
 
 // Function Prototypes
 // Sensor initialization
-void thermocouple_0_init(void);
-void thermocouple_1_init(void);
-void thermistor_0_init(void);
-void thermistor_1_init(void);
+extern void thermocouple_0_init(void);
+extern void thermocouple_1_init(void);
+extern void thermistor_0_init(void);
+extern void thermistor_1_init(void);
 
 // Sensor On/off
-void thermocouple_0_ON(void);
-void thermocouple_1_ON(void);
-void thermistor_0_ON(void);
-void thermistor_1_ON(void);
+extern void thermocouple_0_ON(void);
+extern void thermocouple_1_ON(void);
+extern void thermistor_0_ON(void);
+extern void thermistor_1_ON(void);
 void thermocouple_0_OFF(void);
 void thermocouple_1_OFF(void);
 void thermistor_0_OFF(void);
 void thermistor_1_OFF(void);
 
-//Sensor start reading
-void thermocouple_0_read(void);
-void thermocouple_1_read(void);
-void thermistor_0_read(void);
-void thermistor_1_read(void);
+  //Sensor start reading
+extern void thermocouple_0_read(void);
+extern void thermocouple_1_read(void);
+extern void thermistor_0_read(void);
+extern void thermistor_1_read(void);
 
-//Sensor Hardware Control
-// SPI/CS for MAX31588 Type K Cold Reference Thermocouple ADCs
-// ADC Channel's for Thermistors
-uint16_t thermocouple_0_adc_read();
-uint16_t thermocouple_1_adc_read();
-uint16_t thermistor_0_adc_read();
-uint16_t thermistor_1_adc_read();
 
 // Getters
 // Get sensor state
