@@ -1,5 +1,4 @@
 /*
-
 Copyright (c) 2012 - 2013 Robert Giseburt
 Copyright (c) 2013 Alden S. Hart Jr.
 Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
@@ -17,7 +16,6 @@ Copyright (c) 2014 Adam Vadala-Roth - 3D printing Extenstions only
  SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
  OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 */
 
 // Includes
@@ -30,59 +28,106 @@ bool heater_1_run false;
 bool heater_aux_run false;
 bool heatbed_run false;
 
+timer_number kTempControllerTimer = 0;
+timer_number kTempControllerTimerChan = 0;
+
+TimerChannel<kTempControllerTimer, kTempControllerTimerChan> TempTimer(kTimerUpToMatch, /*Hz: */ ISR_freq);
+
 // Runs PID Controller for Heater-0 on Tigershark 3D PROTOTYPE 1
 void controller_heater_0(){
+  heater_0_run = true;
   heater_0_init();              // Initialized Heater 0 Device (Nozzle 0)
   thermocouple_0_init();        // Initialize Thermocouple Sensor 0
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heater-0 Activated")[j]);  // print Heater Status
   while(heater_0_run==true){
     tick_callback_heater_0();
   }
-}
+}// end method
+
 // Runs PID Controller for Heater-1 on Tigershark 3D PROTOTYPE 1
 void controller_heater_1(){
+  heater_1_run = true;
   heater_1_init();              // Initialized Heater 1 Device (Nozzle 1)
   thermocouple_1_init();        // Initialize Thermocouple Sensor 0
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heater-0 Activated")[j]); // print Heater Status
   while(heater_1_run==true){
     tick_callback_heater_1();
   }
-}
+}// end method
+
 // Runs PID Controller for Heater-Aux on Tigershark 3D PROTOTYPE 1
 void controller_heater_aux(){
+  heater_aux_run true;
   heater_aux_init();            // Initialized Aux Heater Device (build chamber heater)
   thermistor_0_init();          // Initialize Thermistor Sensor 0 ATSAM ADC
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Aux Heater Activated")[j]); // print Heater Status
   while(heater_aux_run==true){
     tick_callback_heater_aux();
   }
-}
+}// end method
+
 // Runs PID Controller for Heatbed on Tigershark 3D PROTOTYPE 1
 void controller_heatbed(){
+  heatbed_run true;
   heatbed_init();               // Initialized Heatbed Device
   thermistor_0_init();          // Initialize Thermistor Sensor 1 ATSAM ADC
   sprintf((char *)nv.token, "g%2d%c", 53+i, ("Heatbed Activated")[j]); // print Heater Status
   while(heatbed_run==true){
     tick_callback_heatbed();
-  }
+  } // end while
+}// end method
+
+
+void _stop_controller_heater_0(){
+  heater_0_run false
+  heater_0_OFF();
+  thermocouple_0_OFF();
 }
 
-//MOTATE ISR ?????????????????????
+void _stop_controller_heater_1(){
+  heater_1_run false
+  heater_1_OFF();
+  thermocouple_1_OFF();
+}
+
+void _stop_controller_heater_aux(){
+  heater_aux_run false;
+  heater_aux_OFF();
+  thermistor_0_OFF();
+}
+
+void _stop_controller_heatbedv(){
+  heatbed_run false;
+  heatbed_OFF();
+  theristor_1_OFF();
+}
+
+//Motate Intterrupt Controller
+MOTATE_TIMER_INTERRUPT(void){
+  device.tick_flag = true;
+}  // end interrupt controller
+
 
 //MOTATE timer which one is free for this ?
 void temp_control_timer_init(void){
+  TempTimer.setInterrupts(kInterruptOnMatch|kInterruptOnOverflow);
+  TempTimer.setDutyCycle(ISR_duty_cycle);
+  TempTimer.start();
+  device.tick_10ms_count = 10;
+	device.tick_100ms_count = 10;
+	device.tick_1sec_count = 10;
+  device.pwm_freq =
+}  // end method
 
-}
-
-void tick_1ms(void){  // 1ms callout
+static void tick_1ms(void){  // 1ms callout
   sensor_callback();
-}
+}  // end method
 
-void tick_100ms(void){  // 100ms callout
+static void tick_100ms(void){  // 100ms callout
 	heater_callback();
-}
+}  // end method
 
-uint8_t tick_callback_heater_0(void)
+static uint8_t tick_callback_heater_0(void)
 {
   if (device.tick_flag == false) { return (NO_OP);}
 
@@ -102,9 +147,9 @@ uint8_t tick_callback_heater_0(void)
   tick_1sec();
 
   return (OP_CP);
-}
+}  // end method
 
-uint8_t tick_callback_heater_1(void)
+static uint8_t tick_callback_heater_1(void)
 {
   if (device.tick_flag == false) { return (NO_OP);}
 
@@ -124,10 +169,10 @@ uint8_t tick_callback_heater_1(void)
   tick_1sec();
 
   return (OP_CP);
-}
+}  // end method
 
 
-uint8_t tick_callback_heater_aux(void)
+static uint8_t tick_callback_heater_aux(void)
 {
   if (device.tick_flag == false) { return (NO_OP);}
 
@@ -147,10 +192,10 @@ uint8_t tick_callback_heater_aux(void)
   tick_1sec();
 
   return (OP_CP);
-}
+}  // end method
 
 
-uint8_t tick_callback_heatbed(void)
+static uint8_t tick_callback_heatbed(void)
 {
   if (device.tick_flag == false) { return (NO_OP);}
 
@@ -170,4 +215,36 @@ uint8_t tick_callback_heatbed(void)
   tick_1sec();
 
   return (OP_CP);
-}
+}  // end method
+
+static void tick_1ms_thermocouple_0(void){
+  thermocouple_0_callback(void);
+}  // end method
+
+static void tick_1ms_thermocouple_1(void){
+  thermocouple_1_callback(void);
+}  // end method
+
+static void tick_1ms_thermistor_0(void){
+  thermistor_0_callback(void);
+}  // end method
+
+static void tick_1ms_thermistor_1(void){
+  thermistor_1_callback(void);
+}  // end method
+
+static void tick_100ms_heater_0(void){
+  heater_0_callback(void);
+}  // end method
+
+static void tick_100ms_heater_1(void){
+  heater_1_callback(void);
+}  // end method
+
+static void tick_100ms_heater_aux(void){
+  heater_aux_callback(void);
+}  // end method
+
+static void tick_100ms_heatbed(void){
+  heatbed_callback(void);
+}  // end method

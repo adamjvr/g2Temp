@@ -148,33 +148,33 @@ struct pid_struct {
 
 
 // allocations
-static heater_t heater_0;      // allocate one heater...
-static heater_t heater_1;     // Allocate second heater
-static heater_t heater_aux;         // Allocate aux heater
-static heater_t heatbed;
-static pid_struct pid_heater_0;						// allocate one PID channel...
-static pid_strudt pid_heater_1;
-static pid_struct pid_heater_aux;
-static pid_struct pid_heatbed;
+heater_t heater_0;      // allocate one heater...
+heater_t heater_1;     // Allocate second heater
+heater_t heater_aux;         // Allocate aux heater
+heater_t heatbed;
+pid_struct pid_heater_0;						// allocate one PID channel...
+pid_strudt pid_heater_1;
+pid_struct pid_heater_aux;
+pid_struct pid_heatbed;
 
 /******************************************************************************
  * FUNCTION PROTOTYPES
  ******************************************************************************/
 
-void heater_0_init(void);
-void heater_1_init(void);
-void heater_aux_init(void);
-void heatbed_init(void);
+extern void heater_0_init(void);
+extern void heater_1_init(void);
+extern void heater_aux_init(void);
+extern void heatbed_init(void);
 
 static void heater_0_ON(double setpoint);
 static void heater_1_ON(double setpoint);
 static void heater_aux_ON(double setpoint);
 static void heatbed_ON(double setpoint);
 
-static void heater_0_OFF(uint8_t state, uint8_t code);
-static void heater_1_OFF(uint8_t state, uint8_t code);
-static void heater_aux_OFF(uint8_t state, uint8_t code);
-static void heatbed_OFF(uint8_t state, uint8_t code);
+void heater_0_OFF(uint8_t state, uint8_t code);
+void heater_1_OFF(uint8_t state, uint8_t code);
+void heater_aux_OFF(uint8_t state, uint8_t code);
+void heatbed_OFF(uint8_t state, uint8_t code);
 
 extern void heater_0_callback(void);
 extern void heater_1_callback(void);

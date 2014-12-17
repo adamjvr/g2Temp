@@ -149,9 +149,9 @@ double thermocouple_1_get_temp(void);
 double thermistor_0_get_temp(void);
 double thermistor_1_get_temp(void);
 // Sensor Callback
-void thermocouple_0_callback(void);
-void thermocouple_1_callback(void);
-void thermistor_0_callback(void);
-void thermistor_1_callback(void);
+extern void thermocouple_0_callback(void);
+extern void thermocouple_1_callback(void);
+extern void thermistor_0_callback(void);
+extern void thermistor_1_callback(void);
 
 #endif
