@@ -88,6 +88,7 @@ enum tcHeaterCode {
 
 /**** PID default parameters ***/
 
+/*
 #define PID_DT 				HEATER_TICK_SECONDS	// time constant for PID computation
 #define PID_EPSILON 		0.1				// error term precision
 #define PID_MAX_OUTPUT 		100				// saturation filter max PWM percent
@@ -97,6 +98,48 @@ enum tcHeaterCode {
 #define PID_Ki 				0.1 			// integral gain term
 #define PID_Kd 				0.5				// derivative gain term
 #define PID_INITIAL_INTEGRAL 200			// initial integral value to speed things along
+*/
+
+#define e0_PID_DT 				E0_HEATER_TICK_SECONDS	// time constant for PID computation
+#define e0_PID_EPSILON 		0.1				// error term precision
+#define e0_PID_MAX_OUTPUT 		100				// saturation filter max PWM percent
+#define e0_PID_MIN_OUTPUT 		0				// saturation filter min PWM percent
+
+#define e0_PID_Kp 				5.00			// proportional gain term
+#define e0_PID_Ki 				0.1 			// integral gain term
+#define e0_PID_Kd 				0.5				// derivative gain term
+#define e0_PID_INITIAL_INTEGRAL 200			// initial integral value to speed things along
+
+#define e1_PID_DT 				E1_HEATER_TICK_SECONDS	// time constant for PID computation
+#define e1_PID_EPSILON 		0.1				// error term precision
+#define e1_PID_MAX_OUTPUT 		100				// saturation filter max PWM percent
+#define e1_PID_MIN_OUTPUT 		0				// saturation filter min PWM percent
+
+#define e1_PID_Kp 				5.00			// proportional gain term
+#define e1_PID_Ki 				0.1 			// integral gain term
+#define e1_PID_Kd 				0.5				// derivative gain term
+#define e1_PID_INITIAL_INTEGRAL 200			// initial integral value to speed things along
+
+#define aux_PID_DT 				AUX_HEATER_TICK_SECONDS	// time constant for PID computation
+#define aux_PID_EPSILON 		0.1				// error term precision
+#define aux_PID_MAX_OUTPUT 		100				// saturation filter max PWM percent
+#define aux_PID_MIN_OUTPUT 		0				// saturation filter min PWM percent
+
+#define aux_PID_Kp 				5.00			// proportional gain term
+#define aux_PID_Ki 				0.1 			// integral gain term
+#define aux_PID_Kd 				0.5				// derivative gain term
+#define aux_PID_INITIAL_INTEGRAL 200			// initial integral value to speed things along
+
+#define hb_PID_DT 				HB_HEATER_TICK_SECONDS	// time constant for PID computation
+#define hb_PID_EPSILON 		0.1				// error term precision
+#define hb_PID_MAX_OUTPUT 		100				// saturation filter max PWM percent
+#define hb_PID_MIN_OUTPUT 		0				// saturation filter min PWM percent
+
+#define hb_PID_Kp 				5.00			// proportional gain term
+#define hb_PID_Ki 				0.1 			// integral gain term
+#define hb_PID_Kd 				0.5				// derivative gain term
+#define hb_PID_INITIAL_INTEGRAL 200			// initial integral value to speed things along
+
 
 // some starting values from the example code
 //#define PID_Kp 0.1						// proportional gain term

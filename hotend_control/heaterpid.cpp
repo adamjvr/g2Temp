@@ -596,44 +596,44 @@ static void set_pwm(double pwm_duty_cycle,uint8_t chan){
 static void pid_heater0_init()
 {
 	memset(&pid, 0, sizeof(struct pid_struct));
-	pid_heater_0.Kp = PID_Kp;
-	pid_heater_0.Ki = PID_Ki;
-	pid_heater_0.Kd = PID_Kd;
-	pid_heater_0.output_max = PID_MAX_OUTPUT;		// saturation filter max value
-	pid_heater_0.output_min = PID_MIN_OUTPUT;		// saturation filter min value
+	pid_heater_0.Kp = e0_PID_Kp;
+	pid_heater_0.Ki = e0_PID_Ki;
+	pid_heater_0.Kd = e0_PID_Kd;
+	pid_heater_0.output_max = e0_PID_MAX_OUTPUT;		// saturation filter max value
+	pid_heater_0.output_min = e0_PID_MIN_OUTPUT;		// saturation filter min value
 	pid_heater_0.state = PID_ON;
 }
 
 static void pid_heater1_init()
 {
   memset(&pid, 0, sizeof(struct pid_struct));
-  pid_heater_1.Kp = PID_Kp;
-  pid_heater_1.Ki = PID_Ki;
-  pid_heater_1.Kd = PID_Kd;
-  pid_heater_1.output_max = PID_MAX_OUTPUT;		// saturation filter max value
-  pid_heater_1.output_min = PID_MIN_OUTPUT;		// saturation filter min value
+  pid_heater_1.Kp = e1_PID_Kp;
+  pid_heater_1.Ki = e1_PID_Ki;
+  pid_heater_1.Kd = e1_PID_Kd;
+  pid_heater_1.output_max = e1_PID_MAX_OUTPUT;		// saturation filter max value
+  pid_heater_1.output_min = e1_PID_MIN_OUTPUT;		// saturation filter min value
   pid_heater_1.state = PID_ON;
 }
 
 static void pid_heaterAux_init()
 {
   memset(&pid, 0, sizeof(struct pid_struct));
-  pid_heater_aux.Kp = PID_Kp;
-  pid_heater_aux.Ki = PID_Ki;
-  pid_heater_aux.Kd = PID_Kd;
-  pid_heater_aux.output_max = PID_MAX_OUTPUT;		// saturation filter max value
-  pid_heater_aux.output_min = PID_MIN_OUTPUT;		// saturation filter min value
+  pid_heater_aux.Kp = aux_PID_Kp;
+  pid_heater_aux.Ki = aux_PID_Ki;
+  pid_heater_aux.Kd = aux_PID_Kd;
+  pid_heater_aux.output_max = aux_PID_MAX_OUTPUT;		// saturation filter max value
+  pid_heater_aux.output_min = aux_PID_MIN_OUTPUT;		// saturation filter min value
   pid_heater_aux.state = PID_ON;
 }
 
 static void pid_heatbed_init()
 {
   memset(&pid, 0, sizeof(struct pid_struct));
-  pid_heatbed.Kp = PID_Kp;
-  pid_heatbed.Ki = PID_Ki;
-  pid_heatbed.Kd = PID_Kd;
-  pid_heatbed.output_max = PID_MAX_OUTPUT;		// saturation filter max value
-  pid_heatbed.output_min = PID_MIN_OUTPUT;		// saturation filter min value
+  pid_heatbed.Kp = hb_PID_Kp;
+  pid_heatbed.Ki = hb_PID_Ki;
+  pid_heatbed.Kd = hb_PID_Kd;
+  pid_heatbed.output_max = hb_PID_MAX_OUTPUT;		// saturation filter max value
+  pid_heatbed.output_min = hb_PID_MIN_OUTPUT;		// saturation filter min value
   pid_heatbed.state = PID_ON;
 }
 
@@ -641,66 +641,65 @@ static void pid_heatbed_init()
 static void pid_heater0_reset()
 {
 	pid_heater_0.output = 0;
-	pid_heater_0.integral = PID_INITIAL_INTEGRAL;
+	pid_heater_0.integral = e0_PID_INITIAL_INTEGRAL;
 	pid_heater_0.prev_error = 0;
 }
 
 static void pid_heater1_reset()
 {
   pid_heater_1.output = 0;
-  pid_heater_1.integral = PID_INITIAL_INTEGRAL;
+  pid_heater_1.integral = e1_PID_INITIAL_INTEGRAL;
   pid_heater_1.prev_error = 0;
 }
 
 static void pid_heaterAux_reset()
 {
   pid_heater_aux.output = 0;
-  pid_heater_aux.integral = PID_INITIAL_INTEGRAL;
+  pid_heater_aux.integral = aux_PID_INITIAL_INTEGRAL;
   pid_heater_aux.prev_error = 0;
 }
 
 static void pid_heatbed_reset()
 {
   pid_heatbed.output = 0;
-  pid_heatbed.integral = PID_INITIAL_INTEGRAL;
+  pid_heatbed.integral = hb_PID_INITIAL_INTEGRAL;
   pid_heatbed.prev_error = 0;
 }
 
 static double pid_heater0_calculate(double setpoint,double temperature)
 {
-	if (pid_heater_0.state == PID_OFF) { return (pid_heater_0.output_min);}
+  if (pid_heater_0.state == PID_OFF) { return (pid_heater_0.output_min);}
 
-	pid_heater_0.error = setpoint - temperature;		// current error term
+  pid_heater_0.error = setpoint - temperature;		// current error term
 
-	// perform integration only if error is GT epsilon, and with anti-windup
-	if ((fabs(pid_heater_0.error) > PID_EPSILON) && (pid_heater_0.output < pid_heater_0.output_max)) {
-		pid_heater_0.integral += (pid_heater_0.error * PID_DT);
-	}
-	// compute derivative and output
-	pid_heater_0.derivative = (pid_heater_0.error - pid_heater_0.prev_error) / PID_DT;
-	pid_heater_0.output = pid_heater_0.Kp * pid_heater_0.error + pid_heater_0.Ki * pid_heater_0.integral + pid_heater_0.Kd * pid_heater_0.derivative;
+  // perform integration only if error is GT epsilon, and with anti-windup
+  if ((fabs(pid_heater_0.error) > e0_PID_EPSILON) && (pid_heater_0.output < pid_heater_0.output_max)) {
+    pid_heater_0.integral += (pid_heater_0.error * e0_PID_DT );
+  }
+  // compute derivative and output
+  pid_heater_0.derivative = (pid_heater_0.error - pid_heater_0.prev_error) / e0_PID_DT ;
+  pid_heater_0.output = pid_heater_0.Kp * pid_heater_0.error + pid_heater_0.Ki * pid_heater_0.integral + pid_heater_0.Kd * pid_heater_0.derivative;
 
-	// fix min amd max outputs (saturation filter)
-	if(pid_heater_0.output > pid_heater_0.output_max) { pid_heater_0.output = pid_heater_0.output_max; } else
-	if(pid_heater_0.output < pid_heater_0.output_min) { pid_heater_0.output = pid_heater_0.output_min; }
-	pid_heater_0.prev_error = pid_heater_0.error;
+  // fix min amd max outputs (saturation filter)
+  if(pid_heater_0.output > pid_heater_0.output_max) { pid_heater_0.output = pid_heater_0.output_max; } else
+  if(pid_heater_0.output < pid_heater_0.output_min) { pid_heater_0.output = pid_heater_0.output_min; }
+  pid_heater_0.prev_error = pid_heater_0.error;
 
-	return pid_heater_0.output;
+  return pid_heater_0.output;
 }// end fucntion
 
-
-static double pid_heater_calculate(double setpoint,double temperature)
+static double pid_heater1_calculate(double setpoint,double temperature)
 {
   if (pid_heater_1.state == PID_OFF) { return (pid_heater_1.output_min);}
 
   pid_heater_1.error = setpoint - temperature;		// current error term
 
   // perform integration only if error is GT epsilon, and with anti-windup
-  if ((fabs(pid_heater_1.error) > PID_EPSILON) && (pid_heater_1.output < pid_heater_1.output_max)) {
-    pid_heater_1.integral += (pid_heater_1.error * PID_DT);
+  if ((fabs(pid_heater_1.error) > e1_PID_EPSILON) && (pid_heater_1.output < pid_heater_1.output_max)) {
+    pid_heater_1.integral += (pid_heater_1.error * e1_PID_DT);
   }
   // compute derivative and output
-  pid_heater_1.derivative = (pid_heater_1.error - pid_heater_1.prev_error) / PID_DT;
+  pid_heater_1.derivative = (pid_heater_1.error - pid_heater_1.prev_error) / e1_PID_DT;
   pid_heater_1.output = pid_heater_1.Kp * pid_heater_1.error + pid_heater_1.Ki * pid_heater_1.integral + pid_heater_1.Kd * pid_heater_1.derivative;
 
   // fix min amd max outputs (saturation filter)
@@ -711,18 +710,18 @@ static double pid_heater_calculate(double setpoint,double temperature)
   return pid_heater_1.output;
 }// end fucntion
 
-static double pid_heater_calculate(double setpoint,double temperature)
+static double pid_aux_calculate(double setpoint,double temperature)
 {
   if (pid_heater_aux.state == PID_OFF) { return (pid_heater_aux.output_min);}
 
   pid_heater_aux.error = setpoint - temperature;		// current error term
 
   // perform integration only if error is GT epsilon, and with anti-windup
-  if ((fabs(pid_heater_aux.error) > PID_EPSILON) && (pid_heater_aux.output < pid_heater_aux.output_max)) {
-    pid_heater_aux.integral += (pid_heater_aux.error * PID_DT);
+  if ((fabs(pid_heater_aux.error) > aux_PID_EPSILON) && (pid_heater_aux.output < pid_heater_aux.output_max)) {
+    pid_heater_aux.integral += (pid_heater_aux.error * aux_PID_DT);
   }
   // compute derivative and output
-  pid_heater_aux.derivative = (pid_heater_aux.error - pid_heater_aux.prev_error) / PID_DT;
+  pid_heater_aux.derivative = (pid_heater_aux.error - pid_heater_aux.prev_error) / aux_PID_DT;
   pid_heater_aux.output = pid_heater_aux.Kp * pid_heater_aux.error + pid_heater_aux.Ki * pid_heater_aux.integral + pid_heater_aux.Kd * pid_heater_aux.derivative;
 
   // fix min amd max outputs (saturation filter)
@@ -734,18 +733,18 @@ static double pid_heater_calculate(double setpoint,double temperature)
 }// end fucntion
 
 
-static double pid_heater_calculate(double setpoint,double temperature)
+static double pid_heatbed_calculate(double setpoint,double temperature)
 {
   if (pid_heatbed.state == PID_OFF) { return (pid_heatbed.output_min);}
 
   pid_heatbed.error = setpoint - temperature;		// current error term
 
   // perform integration only if error is GT epsilon, and with anti-windup
-  if ((fabs(pid_heatbed.error) > PID_EPSILON) && (pid_heatbed.output < pid_heatbed.output_max)) {
-    pid_heatbed.integral += (pid_heatbed.error * PID_DT);
+  if ((fabs(pid_heatbed.error) > hb_PID_EPSILON) && (pid_heatbed.output < pid_heatbed.output_max)) {
+    pid_heatbed.integral += (pid_heatbed.error * hb_PID_DT);
   }
   // compute derivative and output
-  pid_heatbed.derivative = (pid_heatbed.error - pid_heatbed.prev_error) / PID_DT;
+  pid_heatbed.derivative = (pid_heatbed.error - pid_heatbed.prev_error) / hb_PID_DT;
   pid_heatbed.output = pid_heatbed.Kp * pid_heatbed.error + pid_heatbed.Ki * pid_heatbed.integral + pid_heatbed.Kd * pid_heatbed.derivative;
 
   // fix min amd max outputs (saturation filter)
